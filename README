@@ -1,0 +1,11 @@
+GNIX -- Extending WebGL
+
+TODO
+- extend prog vars
+- add "#ifdef" automatically to shaders
+- remove dependency on external ajax
+- create a gl.requestFrame()
+- delete/remove buffer
+- delete/remove program
+- support for extra parameter in requestAnimationFrame
+

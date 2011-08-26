@@ -1,0 +1,78 @@
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<title>nehe 1 - gnix</title>
+</head>
+<body>
+<canvas id="testbed" width=400 height=300></canvas>
+
+<script src="/jslib/glmatrix.js" type="text/javascript"></script>
+<script src="/dist/gnix.js"></script>
+
+<script id="shader-frag" type="x-shader/x-fragment">
+#ifdef GL_ES
+precision highp float;
+#endif
+
+void main(void) {
+  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+}
+</script>
+
+<script id="shader-vert" type="x-shader/x-vertex">
+attribute vec3 aVertexPosition;
+
+uniform mat4 uMVMatrix;
+uniform mat4 uPMatrix;
+
+varying vec4 vColor;
+
+void main(void) {
+  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+}
+</script>
+
+<script type="text/javascript">
+var gl = gnix("testbed");
+gl.program().vert("#shader-vert").frag("#shader-frag");
+gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+gl.enable(gl.DEPTH_TEST);
+
+var mvMatrix = mat4.create();
+var pMatrix = mat4.create();
+mat4.perspective(45, gl.canvas.width / gl.canvas.height, 0.1, 100.0, pMatrix);
+mat4.identity(mvMatrix);
+
+
+function initBuffers() {
+  var vertices = [ 0.0,  1.0,  0.0, -1.0, -1.0,  0.0, 1.0, -1.0,  0.0 ];
+  gl.buffer("triangle").data(vertices);
+
+  vertices = [ 1.0,  1.0,  0.0, -1.0,  1.0,  0.0, 1.0, -1.0,  0.0, -1.0, -1.0,  0.0 ];
+  gl.buffer("square").data(vertices);
+}
+
+function drawScene() {
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.prog.uPMatrix(pMatrix);
+
+  mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
+  gl.buffer("triangle").bind();
+  gl.prog.aVertexPosition(0, 0);
+  gl.prog.uMVMatrix(mvMatrix);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
+  gl.buffer("square").bind();
+  gl.prog.aVertexPosition(0, 0);
+  gl.prog.uMVMatrix(mvMatrix);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+initBuffers();
+drawScene();
+</script>
+
+</body>
+</html>
