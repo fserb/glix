@@ -6,10 +6,7 @@ gnix.module.buffer = function(gl) {
     var b = buffers[bufferName] || (buffers[bufferName] = gl.createBuffer());
 
     var _ = {
-      buffer: function() {
-        return b['buffer'];
-      },
-
+      val: b,
       data: function(array) {
         gl.bindBuffer(gl.ARRAY_BUFFER, b);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(array), drawMode);

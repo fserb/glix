@@ -14,19 +14,25 @@
 precision highp float;
 #endif
 
+varying vec4 vColor;
+
 void main(void) {
-  gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+  gl_FragColor = vColor;
 }
 </script>
 
 <script id="shader-vert" type="x-shader/x-vertex">
 attribute vec3 aVertexPosition;
+attribute vec4 aVertexColor;
 
 uniform mat4 uMVMatrix;
 uniform mat4 uPMatrix;
 
+varying vec4 vColor;
+
 void main(void) {
   gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+  vColor = aVertexColor;
 }
 </script>
 
@@ -46,9 +52,16 @@ mat4.identity(mvMatrix);
 function initBuffers() {
   var vertices = [ 0.0,  1.0,  0.0, -1.0, -1.0,  0.0, 1.0, -1.0,  0.0 ];
   gl.buffer("triangle").data(vertices);
+  var color = [ 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0 ];
+  gl.buffer("triangle.color").data(color);
 
   vertices = [ 1.0,  1.0,  0.0, -1.0,  1.0,  0.0, 1.0, -1.0,  0.0, -1.0, -1.0,  0.0 ];
   gl.buffer("square").data(vertices);
+  color = [];
+  for (var i = 0; i < 4; ++i) {
+    color = color.concat([0.5, 0.5, 1.0, 1.0 ]);
+  }
+  gl.buffer("square.color").data(color);
 }
 
 function drawScene() {
@@ -58,12 +71,16 @@ function drawScene() {
   mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
   gl.buffer("triangle").bind();
   gl.prog.aVertexPosition(0, 0);
+  gl.buffer("triangle.color").bind();
+  gl.prog.aVertexColor(0, 0);
   gl.prog.uMVMatrix(mvMatrix);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 
   mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
   gl.buffer("square").bind();
   gl.prog.aVertexPosition(0, 0);
+  gl.buffer("square.color").bind();
+  gl.prog.aVertexColor(0, 0);
   gl.prog.uMVMatrix(mvMatrix);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }

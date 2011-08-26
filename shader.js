@@ -46,6 +46,11 @@ gnix.module.shader = function(gl) {
       gl.vertexAttribPointer(l, 3, gl.FLOAT, false, stride || 0, offset || 0);
     };
   };
+  attribFunc[gl.FLOAT_VEC4] = function(l) {
+    return function(stride, offset) {
+      gl.vertexAttribPointer(l, 4, gl.FLOAT, false, stride || 0, offset || 0);
+    };
+  };
 
   var readProgram = function(p, attrib, uniform) {
     var aa = gl.getProgramParameter(p, gl.ACTIVE_ATTRIBUTES);
@@ -69,7 +74,7 @@ gnix.module.shader = function(gl) {
     gl.prog = {};
     for (var i in attrib) {
       gl.prog[i] = attrib[i];
-      gl.enableVertexAttribArray(attrib[i]);
+      gl.enableVertexAttribArray(attrib[i].val);
     }
     for (var i in uniform) {
       gl.prog[i] = uniform[i];
