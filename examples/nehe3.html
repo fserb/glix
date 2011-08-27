@@ -1,0 +1,111 @@
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<title>nehe 1 - gnix</title>
+</head>
+<body>
+<canvas id="testbed" width=400 height=300></canvas>
+
+<script src="/jslib/glmatrix.js" type="text/javascript"></script>
+<script src="/dist/gnix.js"></script>
+
+<script id="shader-frag" type="x-shader/x-fragment">
+#ifdef GL_ES
+precision highp float;
+#endif
+
+varying vec4 vColor;
+
+void main(void) {
+  gl_FragColor = vColor;
+}
+</script>
+
+<script id="shader-vert" type="x-shader/x-vertex">
+attribute vec3 aVertexPosition;
+attribute vec4 aVertexColor;
+
+uniform mat4 uMVMatrix;
+uniform mat4 uPMatrix;
+
+varying vec4 vColor;
+
+void main(void) {
+  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+  vColor = aVertexColor;
+}
+</script>
+
+<script type="text/javascript">
+var gl = gnix("testbed");
+gl.program().vert("#shader-vert").frag("#shader-frag");
+gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+gl.enable(gl.DEPTH_TEST);
+
+var mvMatrix = mat4.create();
+var pMatrix = mat4.create();
+mat4.perspective(45, gl.canvas.width / gl.canvas.height, 0.1, 100.0, pMatrix);
+mat4.identity(mvMatrix);
+
+function initBuffers() {
+  var vertices = [ 0.0,  1.0,  0.0, -1.0, -1.0,  0.0, 1.0, -1.0,  0.0 ];
+  gl.buffer("triangle").data(vertices, 3);
+  var color = [ 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0 ];
+  gl.buffer("triangle.color").data(color, 4);
+
+  vertices = [ 1.0,  1.0,  0.0, -1.0,  1.0,  0.0, 1.0, -1.0,  0.0, -1.0, -1.0,  0.0 ];
+  gl.buffer("square").data(vertices, 3);
+  color = [];
+  for (var i = 0; i < 4; ++i) {
+    color = color.concat([0.5, 0.5, 1.0, 1.0 ]);
+  }
+  gl.buffer("square.color").data(color, 4);
+}
+
+var rTri = 0, rSquare = 0;
+
+var lastTime = 0;
+function animate() {
+  var timeNow = new Date().getTime();
+  if (lastTime != 0) {
+    var elapsed = timeNow - lastTime;
+    rTri += (Math.PI/2 * elapsed) / 1000.0;
+    rSquare += (Math.PI/4 * elapsed) / 1000.0;
+  }
+  lastTime = timeNow;
+}
+
+function update() {
+  drawScene();
+  animate();
+  gl.requestFrame(update);
+}
+
+function drawScene() {
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.uniform.uPMatrix(pMatrix);
+
+  mat4.identity(mvMatrix);
+  mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
+  mat4.rotate(mvMatrix, rTri, [0, 1, 0]);
+  gl.uniform.uMVMatrix(mvMatrix);
+  gl.assign("triangle").aVertexPosition(0);
+  gl.assign("triangle.color").aVertexColor(0);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  mat4.identity(mvMatrix);
+  mat4.translate(mvMatrix, [1.5, 0.0, -7.0]);
+  mat4.rotate(mvMatrix, rSquare, [1, 0, 0]);
+  gl.uniform.uMVMatrix(mvMatrix);
+  gl.assign("square").aVertexPosition(0);
+  gl.assign("square.color").aVertexColor(0);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+initBuffers();
+gl.requestFrame(update);
+</script>
+
+</body>
+</html>
