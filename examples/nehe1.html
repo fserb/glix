@@ -45,26 +45,25 @@ mat4.identity(mvMatrix);
 
 function initBuffers() {
   var vertices = [ 0.0,  1.0,  0.0, -1.0, -1.0,  0.0, 1.0, -1.0,  0.0 ];
-  gl.buffer("triangle").data(vertices);
+  gl.buffer("triangle").data(vertices, 3);
 
   vertices = [ 1.0,  1.0,  0.0, -1.0,  1.0,  0.0, 1.0, -1.0,  0.0, -1.0, -1.0,  0.0 ];
-  gl.buffer("square").data(vertices);
+  gl.buffer("square").data(vertices, 3);
 }
 
 function drawScene() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  gl.prog.uPMatrix(pMatrix);
+
+  gl.uniform.uPMatrix(pMatrix);
 
   mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
-  gl.buffer("triangle").bind();
-  gl.prog.aVertexPosition(0, 0);
-  gl.prog.uMVMatrix(mvMatrix);
+  gl.uniform.uMVMatrix(mvMatrix);
+  gl.assign("triangle").aVertexPosition(0);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 
   mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
-  gl.buffer("square").bind();
-  gl.prog.aVertexPosition(0, 0);
-  gl.prog.uMVMatrix(mvMatrix);
+  gl.uniform.uMVMatrix(mvMatrix);
+  gl.assign("square").aVertexPosition(0);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
