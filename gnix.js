@@ -10,12 +10,9 @@
   };
 
   gnix.module = {
-    base: function() {
-
-
+    base: function(gl) {
+      gl._state = {};
     }
-
-
   };
 
   'gnix' in window || (window.gnix = gnix);

@@ -1,9 +1,6 @@
 gnix.module.shader = function(gl) {
   // contains all programs currently loaded.
   var programs = {};
-  // variables for program being used.
-  var attribs = {};
-  var uniforms = {};
 
   var loadShader = function(type, name) {
     var data;
@@ -40,15 +37,17 @@ gnix.module.shader = function(gl) {
   // TODO: uniformFunc for gl.SAMPLER_2D and gl.SAMPLER_CUBE.
 
   var attribFunc = {};
-  // TODO: make other attribFunc.
+  // TODO: make other attribFunc: FLOAT, FLOAT_VEC2, FLOAT_MAT2, FLOAT_MAT3, FLOAT_MAT4.
   attribFunc[gl.FLOAT_VEC3] = function(l) {
-    return function(stride, offset) {
-      gl.vertexAttribPointer(l, 3, gl.FLOAT, false, stride || 0, offset || 0);
+    return function(offset) {
+      gl.vertexAttribPointer(l, 3, gl.FLOAT, false, gl._state.bufferStride*4 || 0, offset*4 || 0);
+      return gl.attrib;
     };
   };
   attribFunc[gl.FLOAT_VEC4] = function(l) {
-    return function(stride, offset) {
-      gl.vertexAttribPointer(l, 4, gl.FLOAT, false, stride || 0, offset || 0);
+    return function(offset) {
+      gl.vertexAttribPointer(l, 4, gl.FLOAT, false, gl._state.bufferStride*4 || 0, offset*4 || 0);
+      return gl.attrib;
     };
   };
 
@@ -71,54 +70,51 @@ gnix.module.shader = function(gl) {
 
   var useProgram = function(p, attrib, uniform) {
     gl.useProgram(p);
-    gl.prog = {};
+    gl.uniform = uniform;
+    gl.attrib = {};
     for (var i in attrib) {
-      gl.prog[i] = attrib[i];
+      gl.attrib[i] = attrib[i];
       gl.enableVertexAttribArray(attrib[i].val);
     }
-    for (var i in uniform) {
-      gl.prog[i] = uniform[i];
+  };
+
+  var linkProgram = function(name, p, s) {
+    p.attached |= s;
+    if (p.attached != 3) return;
+    gl.linkProgram(p.val);
+    if (!gl.getProgramParameter(p.val, gl.LINK_STATUS)) {
+      console.log("gl.linkProgram(" + name + "): " + gl.getProgramInfoLog(p.val));
+    }
+    readProgram(p.val, p.attrib, p.uniform);
+    if (name == "") {
+      useProgram(p.val, p.attrib, p.uniform);
     }
   };
 
   gl.program = function(shaderName) {
     if (shaderName === undefined) shaderName = "";
-    var p = programs[shaderName] || (programs[shaderName] = gl.createProgram());
-    var attrib = attribs[shaderName] || (attribs[shaderName] = {});
-    var uniform = uniforms[shaderName] || (uniforms[shaderName] = {});
-    var _attached = 0;
-
-    var _link = function(s) {
-      _attached |= s;
-      if (_attached != 3) return;
-      gl.linkProgram(p);
-      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
-        console.log("gl.linkProgram(" + shaderName + "): " + gl.getProgramInfoLog(p));
+    var p = programs[shaderName];
+    if (!p) {
+      p = programs[shaderName] = {
+        _attached: 0,
+        val: gl.createProgram(),
+        attrib: {},
+        uniform: {},
+        vert: function(name) {
+          gl.attachShader(p.val, loadShader(gl.VERTEX_SHADER, name));
+          linkProgram(shaderName, p, 1);
+          return p;
+        },
+        frag: function(name) {
+          gl.attachShader(p.val, loadShader(gl.FRAGMENT_SHADER, name));
+          linkProgram(shaderName, p, 2);
+          return p;
+        },
+        use: function() {
+          useProgram(p.val, p.attrib, p.uniform);
+        }
       }
-      readProgram(p, attrib, uniform);
-      if (shaderName == "") {
-        useProgram(p, attrib, uniform);
-      }
-    };
-    // chain object.
-    var _ = {
-      get: function() {
-        return p;
-      },
-      vert: function(name) {
-        gl.attachShader(p, loadShader(gl.VERTEX_SHADER, name));
-        _link(1);
-        return _;
-      },
-      frag: function(name) {
-        gl.attachShader(p, loadShader(gl.FRAGMENT_SHADER, name));
-        _link(2);
-        return _;
-      },
-      use: function() {
-        useProgram(p, attrib, uniform);
-      }
-    };
-    return _;
+    }
+    return p;
   };
 };

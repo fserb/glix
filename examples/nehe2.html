@@ -69,17 +69,17 @@ function drawScene() {
   gl.prog.uPMatrix(pMatrix);
 
   mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
-  gl.buffer("triangle").bind();
+  gl.buffer("triangle");
   gl.prog.aVertexPosition(0, 0);
-  gl.buffer("triangle.color").bind();
+  gl.buffer("triangle.color");
   gl.prog.aVertexColor(0, 0);
   gl.prog.uMVMatrix(mvMatrix);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 
   mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
-  gl.buffer("square").bind();
+  gl.buffer("square");
   gl.prog.aVertexPosition(0, 0);
-  gl.buffer("square.color").bind();
+  gl.buffer("square.color");
   gl.prog.aVertexColor(0, 0);
   gl.prog.uMVMatrix(mvMatrix);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
