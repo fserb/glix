@@ -3,11 +3,10 @@ GNIX -- Extending WebGL
 TODO
 - add "#ifdef" automatically to shaders
 - remove dependency on external ajax
-- delete/remove vertex/element buffer
+- delete/remove object
 - delete/remove program
 - support for extra parameter in requestAnimationFrame
+- support for TEXTURE_CUBE
 
 
-texture todo
-- load texture support
--
+

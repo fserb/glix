@@ -38,7 +38,7 @@ gnix.module.shader = function(gl) {
   // TODO: uniformFunc for gl.SAMPLER_CUBE.
 
   var attribFunc = {};
-  // TODO: make other attribFunc: FLOAT, FLOAT_VEC2, FLOAT_MAT2, FLOAT_MAT3, FLOAT_MAT4.
+  // TODO: make other attribFunc: FLOAT, FLOAT_MAT2, FLOAT_MAT3, FLOAT_MAT4.
   attribFunc[gl.FLOAT_VEC2] = function(l) {
     return function(offset) {
       gl.vertexAttribPointer(l, 2, gl.FLOAT, false, gl._state.bufferStride*4 || 0, offset*4 || 0);
