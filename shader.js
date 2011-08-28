@@ -34,10 +34,18 @@ gnix.module.shader = function(gl) {
   uniformFunc[gl.FLOAT_MAT2] = function(l) { return function(v) { gl.uniformMatrix2fv(l, false, v); }; };
   uniformFunc[gl.FLOAT_MAT3] = function(l) { return function(v) { gl.uniformMatrix3fv(l, false, v); }; };
   uniformFunc[gl.FLOAT_MAT4] = function(l) { return function(v) { gl.uniformMatrix4fv(l, false, v); }; };
-  // TODO: uniformFunc for gl.SAMPLER_2D and gl.SAMPLER_CUBE.
+  uniformFunc[gl.SAMPLER_2D] = function(l) { return function() { gl.uniform1i(l, gl._state.textureUnit); }; };
+  // TODO: uniformFunc for gl.SAMPLER_CUBE.
 
   var attribFunc = {};
   // TODO: make other attribFunc: FLOAT, FLOAT_VEC2, FLOAT_MAT2, FLOAT_MAT3, FLOAT_MAT4.
+  attribFunc[gl.FLOAT_VEC2] = function(l) {
+    return function(offset) {
+      gl.vertexAttribPointer(l, 2, gl.FLOAT, false, gl._state.bufferStride*4 || 0, offset*4 || 0);
+      return gl.attrib;
+    };
+  };
+
   attribFunc[gl.FLOAT_VEC3] = function(l) {
     return function(offset) {
       gl.vertexAttribPointer(l, 3, gl.FLOAT, false, gl._state.bufferStride*4 || 0, offset*4 || 0);
