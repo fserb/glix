@@ -1,20 +1,20 @@
 (function() {
-  var gnix = function(id) {
+  var glix = function(id) {
     var canvas = document.getElementById(id);
     var gl = canvas.getContext("experimental-webgl");
     gl.canvas = canvas;
-    for (var i in gnix.module) {
-      gnix.module[i](gl);
+    for (var i in glix.module) {
+      glix.module[i](gl);
     }
     return gl;
   };
 
-  gnix.module = {
+  glix.module = {
     base: function(gl) {
       gl._state = {};
       gl._objects = {};
     }
   };
 
-  'gnix' in window || (window.gnix = gnix);
+  'glix' in window || (window.glix = glix);
 })();

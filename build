@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cat gnix.js objects.js shader.js buffer.js texture.js utils.js > dist/gnix.js
-uglifyjs --no-copyright < dist/gnix.js > dist/gnix.min.js
+cat glix.js objects.js shader.js buffer.js texture.js utils.js > dist/glix.js
+uglifyjs --no-copyright < dist/glix.js > dist/glix.min.js

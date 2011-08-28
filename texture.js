@@ -1,4 +1,4 @@
-gnix.module.texture = function(gl) {
+glix.module.texture = function(gl) {
   gl.texture = function(textureUnit, textureName) {
     textureName = textureName || textureUnit;
     var t = gl._objects[textureName];

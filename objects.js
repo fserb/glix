@@ -1,4 +1,4 @@
-gnix.module.objects = function(gl) {
+glix.module.objects = function(gl) {
   gl.assign = function(objectName) {
     var b = gl._objects[objectName];
     if (!b) throw "'" + objectName + "' used before being initialized.";

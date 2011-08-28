@@ -1,4 +1,4 @@
-gnix.module.buffer = function(gl) {
+glix.module.buffer = function(gl) {
   gl.vertex = function(vertexName) {
     var b = gl._objects[vertexName];
     if (!b) {

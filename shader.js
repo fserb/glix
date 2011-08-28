@@ -1,4 +1,4 @@
-gnix.module.shader = function(gl) {
+glix.module.shader = function(gl) {
   // contains all programs currently loaded.
   var programs = {};
 

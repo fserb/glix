@@ -1,4 +1,4 @@
-gnix.module.utils = function(gl) {
+glix.module.utils = function(gl) {
   var raf =
     window.webkitRequestAnimationFrame ||
     window.mozRequestAnimationFrame ||
