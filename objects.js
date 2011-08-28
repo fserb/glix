@@ -5,4 +5,9 @@ glix.module.objects = function(gl) {
     b.bind();
     return b.assign();
   };
+  gl.remove = function(objectName) {
+    delete gl._objects[objectName];
+    return gl;
+  };
+
 };
