@@ -13,6 +13,7 @@ glix.module.shader = function(gl) {
       data = c.responseText;
     }
 
+    data = "#ifdef GL_ES\nprecision highp float;\n#endif\n" + data;
     var s = gl.createShader(type);
     gl.shaderSource(s, data);
     gl.compileShader(s);
