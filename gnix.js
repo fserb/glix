@@ -12,6 +12,7 @@
   gnix.module = {
     base: function(gl) {
       gl._state = {};
+      gl._objects = {};
     }
   };
 

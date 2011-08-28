@@ -1,11 +1,9 @@
 gnix.module.texture = function(gl) {
-  var textures = {};
-
   gl.texture = function(textureUnit, textureName) {
     textureName = textureName || textureUnit;
-    var t = textures[textureName];
+    var t = gl._objects[textureName];
     if (!t) {
-      t = textures[textureName] = {
+      t = gl._objects[textureName] = {
         val: gl.createTexture(),
         _image: null,
         store: function() {
@@ -25,6 +23,8 @@ gnix.module.texture = function(gl) {
         bind: function() {
           gl.activeTexture(gl.TEXTURE0 + textureUnit);
           gl.bindTexture(gl.TEXTURE_2D, t.val);
+        },
+        assign: function() {
           gl._state.textureUnit = textureUnit;
           return gl.uniform;
         },

@@ -1,11 +1,8 @@
 gnix.module.buffer = function(gl) {
-  var vertexes = {};
-  var elements = {};
-
   gl.vertex = function(vertexName) {
-    var b = vertexes[vertexName];
+    var b = gl._objects[vertexName];
     if (!b) {
-      b = vertexes[vertexName] = {
+      b = gl._objects[vertexName] = {
         val: gl.createBuffer(),
         length: 0,
         size: 0,
@@ -20,25 +17,20 @@ gnix.module.buffer = function(gl) {
           gl.bindBuffer(gl.ARRAY_BUFFER, b.val);
           return b;
         },
+        assign: function() {
+          gl._state.bufferStride = b.size;
+          return gl.attrib;
+        },
       };
     }
     gl.bindBuffer(gl.ARRAY_BUFFER, b.val);
     return b;
   };
 
-  gl.assign = function(vertexName) {
-    var b = vertexes[vertexName];
-    if (!b) throw "buffer '" + vertexName + "' must be initialized with vertex() before use.";
-    b.bind();
-    gl._state.bufferStride = b.size;
-    return gl.attrib;
-  };
-
-
   gl.elements = function(elementsName) {
-    var e = elements[elementsName];
+    var e = gl._objects[elementsName];
     if (!e) {
-      e = elements[elementsName] = {
+      e = gl._objects[elementsName] = {
         val: gl.createBuffer(),
         length: 0,
         data: function(array, drawMode) {
