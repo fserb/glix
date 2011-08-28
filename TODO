@@ -2,9 +2,11 @@ TODO
 - remove dependency on external ajax
 - delete/remove object
 - delete/remove program
-- support for FBO
 - support for extra parameter in requestAnimationFrame
 - support for TEXTURE_CUBE
+- meshes (basic meshes, load formats)
+- include glmatrix?
+- pop/push matrix on glmatrix?
 
 
 

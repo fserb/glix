@@ -1,16 +1,27 @@
 glix.module.texture = function(gl) {
-  gl.texture = function(textureUnit, textureName) {
-    textureName = textureName || textureUnit;
+  gl.texture = function(textureName, textureUnit) {
     var t = gl._objects[textureName];
     if (!t) {
       t = gl._objects[textureName] = {
         val: gl.createTexture(),
         _image: null,
         _loaded: false,
+        width: 0,
+        height: 0,
         _deferred: [],
+        empty: function(width, height) {
+          t.width = width;
+          t.height = height;
+          t._loaded = true;
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height,
+                        0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+          return t;
+        },
         store: function() {
           t._loaded = true;
           t.bind();
+          t.width = t._image.width;
+          t.height = t._image.height;
           gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, t._image);
           for (var i in t._deferred) {
@@ -36,7 +47,7 @@ glix.module.texture = function(gl) {
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, min);
           if (min == gl.NEAREST_MIPMAP_NEAREST || min == gl.LINEAR_MIPMAP_NEAREST ||
               min == gl.NEAREST_MIPMAP_LINEAR  || min == gl.LINEAR_MIPMAP_LINEAR) {
-            gl.generateMipmap(gl.TEXTURE_2D);
+            t.mipmap();
           }
           return t;
         },
@@ -62,6 +73,9 @@ glix.module.texture = function(gl) {
         assign: function() {
           gl._state.textureUnit = textureUnit;
           return gl.uniform;
+        },
+        mipmap: function() {
+          gl.generateMipmap(gl.TEXTURE_2D);
         },
       };
     }
