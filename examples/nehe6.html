@@ -1,0 +1,145 @@
+<html>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<title>gnix testbed</title>
+<style>
+body {
+  background-color: #222;
+}
+#stats {
+  position:absolute;
+  bottom:0;
+  right:0;
+  width:80px;
+  height:45px;
+  background-color:#000;
+}
+</style>
+</head>
+<body src="testbed.html">
+
+<canvas id="testbed" width=400 height=300></canvas>
+
+<div id="stats"></div>
+
+<script src="/jslib/glmatrix.js" type="text/javascript"></script>
+<script src="/dist/glix.js"></script>
+
+<script id="shader-frag" type="x-shader/x-fragment">
+#ifdef GL_ES
+precision highp float;
+#endif
+
+varying vec2 vTextureCoord;
+uniform sampler2D uSampler;
+
+void main(void) {
+  gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+}
+</script>
+
+<script id="shader-vert" type="x-shader/x-vertex">
+attribute vec3 aVertexPosition;
+attribute vec2 aTextureCoord;
+
+uniform mat4 uMVMatrix;
+uniform mat4 uPMatrix;
+
+varying vec2 vTextureCoord;
+
+void main(void) {
+  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+  vTextureCoord = aTextureCoord;
+}
+</script>
+
+
+<script>
+var gl = glix("testbed");
+gl.program().vert("#shader-vert").frag("#shader-frag");
+gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+gl.enable(gl.DEPTH_TEST);
+
+var mvMatrix = mat4.create();
+var pMatrix = mat4.create();
+
+var cb = 0;
+function init() {
+  var vertices;
+  vertices = [ -1.0, -1.0,  1.0, 1.0, -1.0,  1.0, 1.0,  1.0,  1.0, -1.0,  1.0,  1.0,
+               -1.0, -1.0, -1.0, -1.0,  1.0, -1.0, 1.0,  1.0, -1.0, 1.0, -1.0, -1.0,
+               -1.0,  1.0, -1.0, -1.0,  1.0,  1.0, 1.0,  1.0,  1.0, 1.0,  1.0, -1.0,
+               -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0,  1.0, -1.0, -1.0,  1.0,
+               1.0, -1.0, -1.0, 1.0,  1.0, -1.0, 1.0,  1.0,  1.0, 1.0, -1.0,  1.0,
+               -1.0, -1.0, -1.0, -1.0, -1.0,  1.0, -1.0,  1.0,  1.0, -1.0,  1.0, -1.0 ];
+  gl.vertex("cube.vertex").data(vertices, 3);
+  var texture;
+  texture = [ 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+              1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0,
+              0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0,
+              1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
+              1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0,
+              0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0 ];
+  gl.vertex("cube.texture").data(texture, 2);
+  var indices = [ 0, 1, 2,  0, 2, 3,  4, 5, 6,  4, 6, 7,
+                  8, 9, 10,  8, 10, 11,  12, 13, 14,  12, 14, 15,
+                  16, 17, 18,  16, 18, 19,  20, 21, 22,   20, 22, 23 ];
+  gl.elements("cube").data(indices);
+  gl.texture(0, "mm").image("crate.gif").filter(gl.LINEAR_MIPMAP_NEAREST, gl.LINEAR);
+  gl.texture(0, "tex").image("crate.gif").filter(gl.NEAREST, gl.NEAREST);
+  gl.texture(0, "m2").image("crate.gif").filter(gl.LINEAR_MIPMAP_LINEAR, gl.LINEAR);
+  gl.texture(0, "m3").image("crate.gif").filter(gl.NEAREST_MIPMAP_NEAREST, gl.NEAREST);
+}
+// try changing window.text to other textures on the console and see the results.
+var text = "m2";
+
+var xRot = 0;
+var yRot = 0;
+var zRot = 0;
+var distAng = 0;
+var dist = -12.0;
+
+var lastTime = 0;
+function animate() {
+  var timeNow = new Date().getTime();
+  if (lastTime != 0) {
+    var elapsed = timeNow - lastTime;
+    distAng += ((Math.PI/5) * elapsed) / 1000.0;
+    dist = -11.1 + 10*Math.sin(distAng);
+  }
+  lastTime = timeNow;
+}
+
+function update() {
+  drawScene();
+  animate();
+  gl.requestFrame(update);
+}
+
+function drawScene() {
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  mat4.perspective(45, gl.canvas.width / gl.canvas.height, 0.1, 100.0, pMatrix);
+  gl.uniform.uPMatrix(pMatrix);
+
+  mat4.identity(mvMatrix);
+  mat4.translate(mvMatrix, [0.0, 0.0, dist]);
+  mat4.rotate(mvMatrix, xRot, [1, 0, 0]);
+  mat4.rotate(mvMatrix, yRot, [0, 1, 0]);
+  mat4.rotate(mvMatrix, zRot, [0, 0, 1]);
+  gl.uniform.uMVMatrix(mvMatrix);
+
+  gl.assign("cube.vertex").aVertexPosition(0);
+  gl.assign("cube.texture").aTextureCoord(0);
+  gl.assign(text).uSampler();
+  gl.elements("cube").draw(gl.TRIANGLES);
+}
+
+init();
+gl.requestFrame(update);
+
+</script>
+
+</body>
+</html>
