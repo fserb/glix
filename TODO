@@ -1,10 +1,11 @@
 TODO
 - remove dependency on external ajax
-- delete/remove object
-- delete/remove program
-- support for extra parameter in requestAnimationFrame
 - support for TEXTURE_CUBE
 - meshes (basic meshes, load formats)
+- program library
+- blending
+- stencil buffer example
+- lights
 - include glmatrix?
 - pop/push matrix on glmatrix?
 

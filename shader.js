@@ -1,7 +1,4 @@
 glix.module.shader = function(gl) {
-  // contains all programs currently loaded.
-  var programs = {};
-
   var loadShader = function(type, name) {
     var data;
     if (name[0] == "#") {
@@ -102,9 +99,9 @@ glix.module.shader = function(gl) {
 
   gl.program = function(shaderName) {
     if (shaderName === undefined) shaderName = "";
-    var p = programs[shaderName];
+    var p = gl._objects[shaderName];
     if (!p) {
-      p = programs[shaderName] = {
+      p = gl._objects[shaderName] = {
         _attached: 0,
         val: gl.createProgram(),
         attrib: {},
