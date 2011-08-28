@@ -23,8 +23,7 @@ gnix.module.buffer = function(gl) {
         },
       };
     }
-    gl.bindBuffer(gl.ARRAY_BUFFER, b.val);
-    return b;
+    return b.bind();
   };
 
   gl.elements = function(elementsName) {
@@ -50,7 +49,6 @@ gnix.module.buffer = function(gl) {
         },
       };
     }
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, e.val);
-    return e;
+    return e.bind();
   };
 };
