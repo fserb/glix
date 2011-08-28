@@ -49,3 +49,9 @@ and assign to a shader uniform 2D sampler `uSampler`:
     gl.assign("text").uSampler();
 
 **gl.requestFrame** encapsulates RequestAnimationFrame.
+
+
+Notes
+-----
+
+Includes a modified version of glmatrix.js by Brandon Jones.
