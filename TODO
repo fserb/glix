@@ -1,10 +1,9 @@
 TODO
 - remove dependency on external ajax
 - support for TEXTURE_CUBE
-- meshes (basic meshes, load formats)
+- load JSON format
 - program library
 - blending
-- stencil buffer example
 - lights
 - pop/push matrix on glmatrix?
 
