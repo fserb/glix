@@ -65,7 +65,7 @@ glix.module.shader = function(gl) {
       attrib[a.name] = attribFunc[a.type](l);
       attrib[a.name].val = l;
     }
-    var aa = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+    aa = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
     for (var i = 0; i < aa; ++i) {
       var a = gl.getActiveUniform(p, i);
       var l = gl.getUniformLocation(p, a.name);
@@ -85,16 +85,14 @@ glix.module.shader = function(gl) {
   };
 
   var linkProgram = function(name, p, s) {
-    p.attached |= s;
-    if (p.attached != 3) return;
+    p._attached |= s;
+    if (p._attached != 3) return;
     gl.linkProgram(p.val);
     if (!gl.getProgramParameter(p.val, gl.LINK_STATUS)) {
-      console.log("gl.linkProgram(" + name + "): " + gl.getProgramInfoLog(p.val));
+      throw "gl.linkProgram(" + name + "): " + gl.getProgramInfoLog(p.val);
     }
     readProgram(p.val, p.attrib, p.uniform);
-    if (name == "") {
-      useProgram(p.val, p.attrib, p.uniform);
-    }
+    p._attached = 4;
   };
 
   gl.program = function(shaderName) {
@@ -120,6 +118,9 @@ glix.module.shader = function(gl) {
           useProgram(p.val, p.attrib, p.uniform);
         }
       }
+    }
+    if (p._attached == 4) {
+      p.use();
     }
     return p;
   };

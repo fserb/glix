@@ -13,6 +13,9 @@
     base: function(gl) {
       gl._state = {};
       gl._objects = {};
+      gl._new = {};
+      gl.width = gl.canvas.width;
+      gl.height = gl.canvas.height;
     }
   };
 

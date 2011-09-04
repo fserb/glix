@@ -9,5 +9,4 @@ glix.module.objects = function(gl) {
     delete gl._objects[objectName];
     return gl;
   };
-
 };
